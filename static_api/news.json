@@ -1,0 +1,140 @@
+{
+ "version": "2026.09.16",
+ "entries": [
+  {
+   "id": "free-forever",
+   "title": "Free for life — and offline",
+   "date": "2026-09-16",
+   "category": "feature",
+   "icon": "🕊️",
+   "summary": "YahBible is free for life and works fully offline. No paywall on the Word, the original languages, or research. “Buy the truth, and sell it not” (Proverbs 23:23); “freely ye have received, freely give” (Matthew 10:8).",
+   "deepLink": ""
+  },
+  {
+   "id": "word-study-3lang",
+   "title": "Hebrew, Greek & Aramaic word study",
+   "date": "2026-09-16",
+   "category": "feature",
+   "icon": "📖",
+   "summary": "Tap any word in the OT or NT for its original Hebrew, Greek or Aramaic, its Strong’s number, transliteration, letter meanings, and every place it is used across Scripture — in-depth study included, and it works offline.",
+   "deepLink": ""
+  },
+  {
+   "id": "commandments-scarlet",
+   "title": "The Ten Commandments, taught in colour",
+   "date": "2026-09-16",
+   "category": "ui",
+   "icon": "📜",
+   "summary": "Each commandment now reads larger and clearer, with the words of Christ in holographic scarlet (like the red-letter words) and every other quote in violet.",
+   "deepLink": "repentance"
+  },
+  {
+   "id": "cosmos-transparent",
+   "title": "Uriel’s Heavenly Design refined",
+   "date": "2026-09-16",
+   "category": "ui",
+   "icon": "🌍",
+   "summary": "The flat-earth cosmology (2D disc & 3D dome) now renders transparent — only the model and its labels draw, so the sanctuary background shows through.",
+   "deepLink": ""
+  },
+  {
+   "id": "compare-apps",
+   "title": "Why YahBible",
+   "date": "2026-09-16",
+   "category": "feature",
+   "icon": "⚖️",
+   "summary": "A new comparison shows how YahBible stands beside other Bible apps: free for life, fully offline, original-language study, the apocrypha, the cosmology, and an AI guide that cites chapter and verse — none of it paywalled.",
+   "deepLink": ""
+  },
+  {
+   "id": "realizeus-tab",
+   "title": "RealizeUS in the app",
+   "date": "2026-09-14",
+   "category": "feature",
+   "icon": "🌐",
+   "summary": "The bottom-right tab now opens RealizeUS.org right inside YahBible. News & Updates moved to the right menu.",
+   "deepLink": ""
+  },
+  {
+   "id": "desktop-menus",
+   "title": "Menus rebuilt like the desktop",
+   "date": "2026-09-14",
+   "category": "ui",
+   "icon": "📜",
+   "summary": "Left menu = Holy Bible · YHWH The Logos · Torah/OT/NT/Ethiopian/Red Letter, with Gnostic & Questionable accordions and a Download-everything button. Right menu = Settings, News, Repentance, the Ten Commandments.",
+   "deepLink": "repentance"
+  },
+  {
+   "id": "studio-cam",
+   "title": "Studio camera controls",
+   "date": "2026-09-14",
+   "category": "feature",
+   "icon": "🎥",
+   "summary": "Front/back/both cameras, independently movable & pinch-resizable, with border colour (10 incl. holographic), shape, mirror and green-screen — all set in Settings. Gold Aleph-Tav app icon.",
+   "deepLink": ""
+  },
+  {
+   "id": "word-study-live",
+   "title": "Tap any word for its Hebrew/Greek",
+   "date": "2026-09-14",
+   "category": "scripture",
+   "icon": "א",
+   "summary": "Press the eye on a chapter to show the original under each verse; tap a word for its Strong's number and definition. Download the versions & word-study packs for full offline study.",
+   "deepLink": ""
+  },
+  {
+   "id": "qa-reorg",
+   "title": "Ten Commandments rewritten as guided questions",
+   "date": "2026-09-13",
+   "category": "content",
+   "icon": "📖",
+   "summary": "Every commandment now opens as a study of clear questions — “What is Adultery?”, “How do you keep this commandment?”, and “How is it broken?” in each of the seven dimensions — organized exactly as the source document.",
+   "deepLink": "cmd:7"
+  },
+  {
+   "id": "repentance",
+   "title": "Repentance added as its own category",
+   "date": "2026-09-13",
+   "category": "repentance",
+   "icon": "🕊",
+   "summary": "A dedicated Repentance category now sits above the Ten Commandments, and every commandment gained a Repentance section — the inward ladder, per-dimension turning, Seek Counsel in Prayer, and the full Lord's Prayer.",
+   "deepLink": "repentance"
+  },
+  {
+   "id": "onion",
+   "title": "The human-dimension diagram",
+   "date": "2026-09-13",
+   "category": "feature",
+   "icon": "🫧",
+   "summary": "An interactive figure of seven nested layers — Physical on the surface to Spiritual at the core. Click any layer to open its dimension and see where sin forms inwardly before it appears in the body.",
+   "deepLink": "repentance"
+  },
+  {
+   "id": "dictionary",
+   "title": "Offline English dictionary",
+   "date": "2026-09-12",
+   "category": "scripture",
+   "icon": "🔤",
+   "summary": "147,000+ English definitions now work with no internet, alongside the Hebrew/Greek original-language word study.",
+   "deepLink": ""
+  },
+  {
+   "id": "voice",
+   "title": "Offline reading voice",
+   "date": "2026-09-12",
+   "category": "feature",
+   "icon": "🔊",
+   "summary": "Scripture and word studies can be read aloud entirely offline.",
+   "deepLink": ""
+  },
+  {
+   "id": "profiles",
+   "title": "Profiles & reading progress",
+   "date": "2026-09-11",
+   "category": "feature",
+   "icon": "👤",
+   "summary": "Track how much of Scripture you have read, keep notes and bookmarks, and carry them across your devices on the Zion'iel Network.",
+   "deepLink": ""
+  }
+ ]
+}
