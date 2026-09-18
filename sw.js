@@ -7,7 +7,7 @@
      CACHE-FIRST with a background refresh: fast and offline-capable.
    Data packs live in OPFS (the worker's business) and /api never hits network. */
 "use strict";
-const SHELL = "yahbible-shell-v81";
+const SHELL = "yahbible-shell-v82";
 const ASSETS = [
   "vendor/sqlite-wasm/sqlite3.js", "vendor/sqlite-wasm/sqlite3.wasm",
   "assets/elan-fish.webp", "assets/scrollfish.png",
@@ -31,7 +31,25 @@ function isAsset(p) {
 
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
-  if (url.origin !== location.origin) return;      // HF pack downloads: straight through
+  // The iPhone edition reads Scripture from the HF per-book store (cross-origin).
+  // Cache those small per-book JSONs so a book you've opened keeps working OFFLINE
+  // (cache-first + background refresh). Other cross-origin requests pass through.
+  if (url.hostname === "huggingface.co" && url.pathname.includes("/scripture/")) {
+    e.respondWith((async () => {
+      const hit = await caches.match(e.request);
+      if (hit) {
+        e.waitUntil((async () => { try { const fr = await fetch(e.request);
+          if (fr.ok) (await caches.open(SHELL)).put(e.request, fr.clone()); } catch (x) {} })());
+        return hit;
+      }
+      try { const fr = await fetch(e.request);
+        if (fr.ok) (await caches.open(SHELL)).put(e.request, fr.clone());
+        return fr;
+      } catch (x) { return new Response("offline", { status: 503 }); }
+    })());
+    return;
+  }
+  if (url.origin !== location.origin) return;      // other cross-origin (big pack downloads): straight through
   if (e.request.method !== "GET") return;
 
   // Big stable assets: cache-first, refresh in the background.

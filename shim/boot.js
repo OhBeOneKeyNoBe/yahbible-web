@@ -486,8 +486,22 @@
     }));
     return { ref, versions: out };
   }
+  function isIOS() {
+    try {
+      const ua = navigator.userAgent || "";
+      return /iPad|iPhone|iPod/.test(ua) ||
+             (navigator.platform === "MacIntel" && (navigator.maxTouchPoints || 0) > 1);  // iPadOS reports as Mac
+    } catch (e) { return false; }
+  }
   async function detectStoreMode() {
     if (NATIVE) return false;
+    /* iOS home-screen web apps get a small, SEPARATE storage quota that cannot hold
+       the multi-hundred-MB sqlite packs (taviel_versions alone is ~1GB): OPFS installs
+       fine but the pack import blows the quota, so chapters/versions/interlinear never
+       load — while Torah (served from the light per-book store) still does. The store
+       needs no big download and is the intended iPhone path, so force it on iOS
+       regardless of whether OPFS reports as available. */
+    if (isIOS()) return true;
     try {
       const caps = await Promise.race([
         rpc("caps", {}),
@@ -1441,6 +1455,16 @@
     if (document.body) { mobilize(); obs.disconnect(); }
   }).observe(document.documentElement, { childList: true });
   addEventListener("resize", mobilize);
+  /* iOS standalone launches with an unsettled viewport (the window/toolbar height
+     is wrong until the first user gesture), which shifts the layout "until manually
+     resized". Re-run the layout on every settling signal + a few delayed passes so
+     it corrects itself on launch without the user touching anything. */
+  const relayout = () => { mobilize(); syncInsets(); };
+  addEventListener("load", relayout);
+  addEventListener("pageshow", relayout);           // fires on standalone (re)launch / bfcache restore
+  addEventListener("orientationchange", () => setTimeout(relayout, 60));
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", relayout);
+  [120, 400, 900, 1800].forEach((ms) => setTimeout(relayout, ms));
   /* the hybrid's exit rows post 'yb-exit' to the shell; on the open web the
      shell is the RealizeUS site itself — carry the reader home. */
   addEventListener("message", (ev) => {
