@@ -82,15 +82,22 @@
       let base = { version: "", entries: [] };
       try { base = await (await orig()).json(); } catch (e) {}
       const url = coordUrl();
-      if (url) {
-        try {
-          const posts = await client.fetchFeed(url);   // verified against PIN, forgeries dropped
-          const extra = posts.map((p) => ({
-            id: "creator-" + (p.ts || 0), title: p.title || "",
-            date: new Date((p.ts || 0) * 1000).toISOString().slice(0, 10),
-            category: "creator", icon: "📣", summary: p.body || "", deepLink: "" }));
-          base = { version: base.version || "", entries: extra.concat(base.entries || []) };
-        } catch (e) {}
+      let posts = [];
+      try {
+        if (url) {
+          posts = await client.fetchFeed(url);         // live coordinator, if configured
+        } else {
+          // same-origin static signed feed -- works on any host; the sig+pin make it safe
+          const r = await fetch("creator_feed.json", { cache: "no-store" });
+          if (r.ok) posts = await client.read(await r.json());
+        }
+      } catch (e) {}
+      if (posts.length) {
+        const extra = posts.map((p) => ({
+          id: "creator-" + (p.ts || 0), title: p.title || "",
+          date: new Date((p.ts || 0) * 1000).toISOString().slice(0, 10),
+          category: "creator", icon: "📣", summary: p.body || "", deepLink: "" }));
+        base = { version: base.version || "", entries: extra.concat(base.entries || []) };
       }
       return new Response(JSON.stringify(base),
         { headers: { "Content-Type": "application/json; charset=utf-8" } });
