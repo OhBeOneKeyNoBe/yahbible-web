@@ -133,35 +133,62 @@
 
 
   /* ---------- auth endpoints (override boot.js browser-local base) ---------- */
+  /* Capture boot.js's browser-local account handlers BEFORE we override them, so we
+     can fall back to per-device sign-in when the Supabase backend is unreachable
+     (project paused/offline, DNS gone). Login must never hard-fail just because the
+     cloud is down. */
+  const localSignup = P["/api/signup"], localLogin = P["/api/login"], localMe = H["/api/me"];
+  const _netFail = (e) => {
+    if (!e) return false;
+    const m = String((e && e.message) || e || "").toLowerCase();
+    return /failed to fetch|fetch|networkerror|network request failed|load failed|timeout|econn|dns|name_not_resolved|err_name|err_connection|503|502|unreachable|no address/.test(m);
+  };
+
   P["/api/signup"] = async (body) => {
-    const c = await ready; if (!c) return J({ ok: false, error: "sign-in service unavailable" });
+    const c = await ready;
+    if (!c) return localSignup(body);
     const email = isEmail(body.username) ? body.username : (body.email || "");
     const username = isEmail(body.username)
       ? (body.name || (body.username || "").split("@")[0]) : body.username;
     if (!email || !body.password)
       return J({ ok: false, error: "email and password required to sync across devices" });
-    const { data, error } = await c.auth.signUp({
-      email, password: body.password,
-      options: { data: { username, handle: (body.handle || username || "").replace(/^@/, "") } } });
-    if (error) return J({ ok: false, error: error.message || "sign-up failed" });
-    return J({ ok: true, user: username,
-      note: data && !data.session ? "Check your email to confirm your account." : undefined });
+    try {
+      const { data, error } = await c.auth.signUp({
+        email, password: body.password,
+        options: { data: { username, handle: (body.handle || username || "").replace(/^@/, "") } } });
+      if (error) {
+        if (_netFail(error)) return localSignup({ username: username || email, email, password: body.password });
+        return J({ ok: false, error: error.message || "sign-up failed" });
+      }
+      return J({ ok: true, user: username,
+        note: data && !data.session ? "Check your email to confirm your account." : undefined });
+    } catch (e) { return localSignup({ username: username || email, email, password: body.password }); }
   };
   P["/api/login"] = async (body) => {
-    const c = await ready; if (!c) return J({ ok: false, error: "sign-in service unavailable" });
+    const c = await ready;
+    if (!c) return localLogin(body);
     const id = (body.username || "").trim();
     if (!id || !body.password) return J({ ok: false, error: "enter your email and password" });
-    /* Accounts are the RealizeUS Supabase accounts, keyed by email. Handles live
-       in the public profiles table but email is (correctly) not exposed there, so
-       sign-in is by email — the same credential used on realizeus.org. */
+    /* Accounts are the RealizeUS Supabase accounts, keyed by email. When the cloud
+       is reachable, sign-in is by email; when it is not, fall back to local. */
     if (!isEmail(id)) return J({ ok: false, error: "Sign in with the email you use on realizeus.org." });
-    const { data, error } = await c.auth.signInWithPassword({ email: id, password: body.password });
-    if (error || !data || !data.user)
-      return J({ ok: false, error: (error && error.message) || "wrong email or password" });
-    const su = userOf(data.session || { user: data.user });
-    return J({ ok: true, user: su ? su.user : id });
+    try {
+      const { data, error } = await c.auth.signInWithPassword({ email: id, password: body.password });
+      if (error) {
+        if (_netFail(error)) return localLogin(body);
+        return J({ ok: false, error: error.message || "wrong email or password" });
+      }
+      if (!data || !data.user) return J({ ok: false, error: "wrong email or password" });
+      const su = userOf(data.session || { user: data.user });
+      return J({ ok: true, user: su ? su.user : id });
+    } catch (e) { return localLogin(body); }
   };
-  H["/api/me"] = async () => J((await sessionUser()) || { user: null });
+  H["/api/me"] = async () => {
+    const su = await sessionUser();
+    if (su) return J(su);
+    if (localMe) { try { return await localMe(); } catch (e) {} }   // local per-device session
+    return J({ user: null });
+  };
   H["/api/logout"] = async () => {
     const c = await ready;
     signingOut = true;
