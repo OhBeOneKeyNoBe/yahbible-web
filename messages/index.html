@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shalom'iel — Private Messages</title>
+<style>
+  :root { --bg:#0e1116; --panel:#161b22; --line:#232a34; --ink:#e6edf3;
+          --mut:#8b949e; --me:#1f6feb; --them:#21262d; --accent:#2ea043; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+         background:var(--bg); color:var(--ink); height:100vh; display:flex; flex-direction:column; }
+  header { padding:12px 16px; border-bottom:1px solid var(--line); display:flex;
+           align-items:center; gap:12px; background:var(--panel); }
+  header h1 { font-size:16px; margin:0; letter-spacing:.5px; }
+  header .who { color:var(--mut); font-size:13px; margin-left:auto; }
+  .lock { color:var(--accent); }
+  .setup { padding:14px 16px; display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid var(--line); }
+  input, button, select { background:var(--panel); color:var(--ink); border:1px solid var(--line);
+          border-radius:8px; padding:8px 10px; font-size:14px; }
+  button { background:var(--me); border-color:var(--me); cursor:pointer; }
+  main { flex:1; display:flex; min-height:0; }
+  .contacts { width:190px; border-right:1px solid var(--line); overflow:auto; background:var(--panel); }
+  .contacts .c { padding:10px 14px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .contacts .c.active { background:var(--them); }
+  .chat { flex:1; display:flex; flex-direction:column; min-width:0; }
+  .msgs { flex:1; overflow:auto; padding:16px; display:flex; flex-direction:column; gap:8px; }
+  .b { max-width:72%; padding:8px 12px; border-radius:14px; font-size:14px; line-height:1.35; word-wrap:break-word; }
+  .b.me { align-self:flex-end; background:var(--me); }
+  .b.them { align-self:flex-start; background:var(--them); }
+  .b .s { display:block; font-size:11px; color:var(--mut); margin-bottom:2px; }
+  .compose { display:flex; gap:8px; padding:12px; border-top:1px solid var(--line); background:var(--panel); }
+  .compose input { flex:1; }
+  .hint { color:var(--mut); font-size:12px; padding:6px 16px 12px; }
+  .peerbar { padding:10px 16px; display:flex; gap:8px; border-bottom:1px solid var(--line); }
+  .peerbar input { flex:1; }
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="lock">🔒</span> Shalom'iel — Private Messages</h1>
+  <span class="who" id="who">not connected</span>
+</header>
+
+<div class="setup" id="setup">
+  <input id="coord" placeholder="coordinator URL (e.g. https://…)" style="min-width:240px" />
+  <input id="handle" placeholder="your handle (e.g. alice)" />
+  <button onclick="connect()">Connect</button>
+  <span class="hint">End-to-end encrypted in your browser. The server only ever sees ciphertext.
+    Your keys never leave this device.</span>
+</div>
+
+<div class="peerbar" id="peerbar" style="display:none">
+  <input id="newpeer" placeholder="message someone (their handle)…"
+         onkeydown="if(event.key==='Enter')openPeer()" />
+  <button class="secondary" onclick="openPeer()">Open</button>
+</div>
+
+<main>
+  <div class="contacts" id="contacts"></div>
+  <div class="chat">
+    <div class="msgs" id="msgs"></div>
+    <div class="compose">
+      <input id="text" placeholder="message…" onkeydown="if(event.key==='Enter')sendMsg()" />
+      <button onclick="sendMsg()">Send</button>
+    </div>
+  </div>
+</main>
+
+<script src="noble_bundle.js"></script>
+<script src="shalomiel_ratchet.js"></script>
+<script src="shalomiel_client.js"></script>
+<script>
+/* Real end-to-end encryption in the browser: this page holds the keys and runs the
+   Shalom'iel Double Ratchet locally (shalomiel_client.js). The coordinator only relays
+   opaque ciphertext. */
+let client = null, me = null, peer = null;
+const threads = {};
+const $ = (id) => document.getElementById(id);
+
+function defaultCoord() {
+  try {
+    const q = new URLSearchParams(location.search).get("coord");
+    if (q) return q;
+    if (window.YB_SHALOM_COORD) return window.YB_SHALOM_COORD;
+    const saved = localStorage.getItem("shalom_coord");
+    if (saved) return saved;
+  } catch (e) {}
+  // if this page is served BY the coordinator, same origin works
+  return location.origin;
+}
+$("coord").value = defaultCoord();
+try { const h = localStorage.getItem("shalom_handle"); if (h) $("handle").value = h; } catch (e) {}
+
+async function connect() {
+  const url = $("coord").value.trim(), h = $("handle").value.trim();
+  if (!url || !h) return;
+  try { localStorage.setItem("shalom_coord", url); localStorage.setItem("shalom_handle", h); } catch (e) {}
+  client = new ShalomielClient(h, url);
+  await client.register();
+  me = h;
+  $("who").innerHTML = 'you are <b>' + escapeHtml(h) + '</b> · <span class="lock">end-to-end encrypted</span>';
+  $("setup").style.display = "none";
+  $("peerbar").style.display = "flex";
+  await refresh();
+  setInterval(poll, 1500);
+}
+
+function openPeer() {
+  const h = $("newpeer").value.trim();
+  if (!h || h === me) return;
+  peer = h; $("newpeer").value = "";
+  refresh(); render();
+}
+
+async function refresh() {
+  let d = {};
+  try { d = await client.refreshDirectory(); } catch (e) {}
+  const box = $("contacts"); box.innerHTML = "";
+  const peers = new Set([...Object.keys(d).filter((h) => h !== me), ...Object.keys(threads)]);
+  peers.forEach((h) => {
+    const el = document.createElement("div");
+    el.className = "c" + (h === peer ? " active" : "");
+    el.textContent = h;
+    el.onclick = () => { peer = h; refresh(); render(); };
+    box.appendChild(el);
+  });
+}
+
+async function sendMsg() {
+  const t = $("text");
+  if (!t.value.trim() || !peer || !client) return;
+  const text = t.value; t.value = "";
+  (threads[peer] = threads[peer] || []).push({ from: me, text });
+  render();
+  try { await client.sendText(peer, text); } catch (e) { /* stays shown locally */ }
+}
+
+async function poll() {
+  if (!client) return;
+  let msgs = [];
+  try { msgs = await client.receive(); } catch (e) { return; }
+  msgs.forEach((m) => { (threads[m.from] = threads[m.from] || []).push({ from: m.from, text: m.text }); });
+  if (msgs.length) { refresh(); render(); }
+}
+
+function render() {
+  const box = $("msgs"); box.innerHTML = "";
+  (threads[peer] || []).forEach((m) => {
+    const el = document.createElement("div");
+    el.className = "b " + (m.from === me ? "me" : "them");
+    el.innerHTML = '<span class="s">' + escapeHtml(m.from) + "</span>" + escapeHtml(m.text);
+    box.appendChild(el);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+</script>
+</body>
+</html>
