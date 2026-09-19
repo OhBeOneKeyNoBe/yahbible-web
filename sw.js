@@ -7,7 +7,7 @@
      CACHE-FIRST with a background refresh: fast and offline-capable.
    Data packs live in OPFS (the worker's business) and /api never hits network. */
 "use strict";
-const SHELL = "yahbible-shell-v83";
+const SHELL = "yahbible-shell-v84";
 const ASSETS = [
   "vendor/sqlite-wasm/sqlite3.js", "vendor/sqlite-wasm/sqlite3.wasm",
   "assets/elan-fish.webp", "assets/scrollfish.png",

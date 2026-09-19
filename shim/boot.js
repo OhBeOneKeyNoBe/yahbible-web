@@ -700,6 +700,21 @@
     LS.set("session", { user: nm });
     return J({ ok: true, user: nm });
   };
+  /* Upsert an on-device account + open its session. Used by auth.js after a BlackBox
+     split-key login (reconstructed from the two public halves) so the account is
+     "saved to phone": subsequent logins work fully offline, and a password changed on
+     another device is re-seeded here (overwrites the stale local hash). */
+  P["/api/_seed_local"] = async (body) => {
+    const nm = (body.username || "").trim().toLowerCase().replace(/^@/, "");
+    if (!nm || !body.password) return J({ ok: false, error: "seed needs a name and password" });
+    const users = LS.get("users", {});
+    const salt = Math.random().toString(36).slice(2);
+    users[nm] = { email: body.email || (users[nm] && users[nm].email) || "",
+                  salt, hash: await pwHash(body.password, salt) };
+    LS.set("users", users);
+    LS.set("session", { user: nm });
+    return J({ ok: true, user: nm });
+  };
   P["/api/note"] = (body) => {
     const cur = curUser();
     if (!cur) return J({ ok: false, error: "not signed in" });
