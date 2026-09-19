@@ -23,6 +23,57 @@
     catch (e) { return "vendor/supabase.js"; }
   })();
 
+  /* ---------- BlackBox split-key login (Otaviel / Aleph'iam) ----------
+     When Supabase is down AND this device has never seen the account, log in from
+     the two PUBLIC encrypted halves the PC published: Hugging Face holds one OTP
+     half + salt + verifier, GitHub holds the other half. Reconstruct the ciphertext
+     (half_HF XOR half_GH), derive K = PBKDF2-HMAC-SHA256(password, salt, 600000),
+     check the verifier, AES-GCM-decrypt -> the account. Each half alone is useless
+     (one-time pad) and the whole is still password-encrypted, so PUBLIC is safe.
+     Identical scheme to yahbible_auth.py, so a PC-created account logs in anywhere. */
+  const AUTH_HF = "https://huggingface.co/datasets/OhBeOneKeyNoBe/yahbible-auth/resolve/main/auth/";
+  const AUTH_GH = "https://raw.githubusercontent.com/OhBeOneKeyNoBe/yahbible-auth/main/auth/";
+  const _enc = new TextEncoder();
+  const _hex2b = (h) => { const a = new Uint8Array(h.length / 2);
+    for (let i = 0; i < a.length; i++) a[i] = parseInt(h.substr(i * 2, 2), 16); return a; };
+  const _b2hex = (b) => Array.from(b).map((x) => x.toString(16).padStart(2, "0")).join("");
+  async function _sha256hex(s) {
+    const d = await crypto.subtle.digest("SHA-256", _enc.encode(s)); return _b2hex(new Uint8Array(d)); }
+  async function _uhashOf(id) { return (await _sha256hex("yahbible:user:" + id.trim().toLowerCase())).slice(0, 32); }
+  async function _kdf(pw, salt) {
+    const base = await crypto.subtle.importKey("raw", _enc.encode(pw), "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits(
+      { name: "PBKDF2", salt, iterations: 600000, hash: "SHA-256" }, base, 256);
+    return new Uint8Array(bits);
+  }
+  async function _verifier(K) {
+    const key = await crypto.subtle.importKey("raw", K, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+    return _b2hex(new Uint8Array(await crypto.subtle.sign("HMAC", key, _enc.encode("yahbible-verify"))));
+  }
+  async function _fetchAuth(u) {
+    try { const r = await realFetch(u, { cache: "no-store" }); if (!r.ok) return null; return await r.json(); }
+    catch (e) { return null; }
+  }
+  async function blackboxLogin(id, password) {
+    try {
+      if (!crypto || !crypto.subtle) return null;
+      const uh = await _uhashOf(id);
+      const [hf, gh] = await Promise.all([_fetchAuth(AUTH_HF + uh + ".json"),
+                                          _fetchAuth(AUTH_GH + uh + ".json")]);
+      if (!hf || !gh || !hf.salt || !hf.half || !gh.half) return null;   // need BOTH halves
+      const K = await _kdf(password, _hex2b(hf.salt));
+      if ((await _verifier(K)) !== hf.verifier) return null;             // wrong password
+      const a = _hex2b(hf.half), b = _hex2b(gh.half);
+      const n = Math.min(a.length, b.length), ct = new Uint8Array(n);
+      for (let i = 0; i < n; i++) ct[i] = a[i] ^ b[i];
+      const nonce = ct.slice(0, 12), body = ct.slice(12);
+      const aeskey = await crypto.subtle.importKey("raw", K, "AES-GCM", false, ["decrypt"]);
+      const pt = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: nonce, additionalData: _enc.encode(hf.uhash) }, aeskey, body);
+      return JSON.parse(new TextDecoder().decode(pt));                   // {user, pub, priv, profile}
+    } catch (e) { return null; }
+  }
+
   /* one SDK client, default storage → shares realizeus.org's session on this origin.
      iOS standalone ("Add to Home Screen") is a separate storage container and can
      evict script-writable storage, so we mirror the GoTrue session into a backup
@@ -138,6 +189,7 @@
      (project paused/offline, DNS gone). Login must never hard-fail just because the
      cloud is down. */
   const localSignup = P["/api/signup"], localLogin = P["/api/login"], localMe = H["/api/me"];
+  const localSeed = P["/api/_seed_local"];
   const _netFail = (e) => {
     if (!e) return false;
     const m = String((e && e.message) || e || "").toLowerCase();
@@ -164,24 +216,40 @@
         note: data && !data.session ? "Check your email to confirm your account." : undefined });
     } catch (e) { return localSignup({ username: username || email, email, password: body.password }); }
   };
+  /* Log in a BlackBox account and save it to this phone (survives password changes
+     made on another device). Returns a J() response on success, null otherwise. */
+  const blackboxSignIn = async (id, password) => {
+    const acc = await blackboxLogin(id, password);
+    if (!acc) return null;
+    if (localSeed) {
+      try { await localSeed({ username: acc.user,
+        email: (acc.profile && acc.profile.email) || (isEmail(id) ? id : ""), password }); }
+      catch (e) {}
+    }
+    return J({ ok: true, user: acc.user, via: "blackbox" });
+  };
+
   P["/api/login"] = async (body) => {
-    const c = await ready;
-    if (!c) return localLogin(body);
     const id = (body.username || "").trim();
     if (!id || !body.password) return J({ ok: false, error: "enter your email and password" });
-    /* Accounts are the RealizeUS Supabase accounts, keyed by email. When the cloud
-       is reachable, sign-in is by email; when it is not, fall back to local. */
-    if (!isEmail(id)) return J({ ok: false, error: "Sign in with the email you use on realizeus.org." });
-    try {
-      const { data, error } = await c.auth.signInWithPassword({ email: id, password: body.password });
-      if (error) {
-        if (_netFail(error)) return localLogin(body);
-        return J({ ok: false, error: error.message || "wrong email or password" });
-      }
-      if (!data || !data.user) return J({ ok: false, error: "wrong email or password" });
-      const su = userOf(data.session || { user: data.user });
-      return J({ ok: true, user: su ? su.user : id });
-    } catch (e) { return localLogin(body); }
+    const c = await ready;
+    /* 1) Supabase (shared RealizeUS session), by email, when reachable. */
+    if (c && isEmail(id)) {
+      try {
+        const { data, error } = await c.auth.signInWithPassword({ email: id, password: body.password });
+        if (!error && data && data.user) {
+          const su = userOf(data.session || { user: data.user });
+          return J({ ok: true, user: su ? su.user : id });
+        }
+        /* reachable but rejected, or a network failure: fall through to BlackBox/local
+           (the account may exist only on the PC-published split-key store, not Supabase) */
+      } catch (e) { /* fall through */ }
+    }
+    /* 2) BlackBox split-key: reconstruct from the two public halves (no PC, no Supabase). */
+    const bb = await blackboxSignIn(id, body.password);
+    if (bb) return bb;
+    /* 3) per-device local account. */
+    return localLogin(body);
   };
   H["/api/me"] = async () => {
     const su = await sessionUser();
