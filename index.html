@@ -12,6 +12,7 @@
   --gold:hsl(45 92% 60%); --teal:#5fd3c4; --red:#c25048; --violet:#a596ee;
   --paper:#f2ead9; --paperink:#221a11; --papercite:#655741; --paperrule:#d6c6a1; --vtitle:#5c1f1b; --vn:#7d5f14;
   --grad:linear-gradient(135deg,hsl(205 100% 60%),hsl(260 80% 62%));
+  --grad-btn:linear-gradient(135deg,hsl(205 92% 38%),hsl(260 64% 47%));
 }
 :root[data-theme="sepia"]{--paper:#e6d0a4;--paperink:#3a2109;--papercite:#785833;--paperrule:#c8ab77;--vtitle:#7a2a08;--vn:#875213}
 :root[data-theme="night"]{--paper:#14110d;--paperink:#e8dfc9;--papercite:#9a8b6f;--paperrule:#2b2319;--vtitle:#d98b6a;--vn:#c7a44b}
@@ -335,7 +336,7 @@ header{display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap
   border-radius:10px;padding:9px 12px;font:15px Inter}
 .searchwrap input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px hsl(205 100% 60% / .18)}
 button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 12px;cursor:pointer;font:600 13px Inter}
-button:hover{border-color:var(--sky)} button.go{background:var(--grad);border:none;color:#fff}
+button:hover{border-color:var(--sky)} button.go{background:var(--grad-btn);border:none;color:#fff}
 button.ask{background:var(--vtitle);border:none;color:#fff;white-space:nowrap}
 button.ask:hover{filter:brightness(1.12)} button.ask:disabled{opacity:.55;cursor:progress}
 button.mic.on{background:var(--red);border:none;color:#fff} .cog{font-size:16px;padding:8px 11px}
@@ -652,7 +653,7 @@ select{background:var(--panelsolid);color:var(--ink);border:1px solid var(--line
 .findres{display:flex;flex-direction:column;gap:5px}
 .findrow{background:#fff;border:1px solid var(--paperrule);border-radius:8px;padding:6px 9px;position:relative}
 .findrow .fref{font:700 11px Inter;color:var(--vtitle)} .findrow .ftext{font:12.5px/1.35 "EB Garamond",serif;color:#3a2c1a}
-.findrow .tagbtn{margin-top:4px;padding:3px 9px;font:700 11px Inter;background:var(--grad);border:0;color:#fff;border-radius:12px;cursor:pointer}
+.findrow .tagbtn{margin-top:4px;padding:3px 9px;font:700 11px Inter;background:var(--grad-btn);border:0;color:#fff;border-radius:12px;cursor:pointer}
 :root[data-theme="night"] .nsh-col,:root[data-theme="night"] .nsh-col .lbl{color:var(--ink)}
 #notesov{position:fixed;inset:0;z-index:130;background:var(--paper);display:flex;flex-direction:column}
 .ndbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 12px;background:hsl(var(--hue) 26% 10%);border-bottom:1px solid var(--line)}
@@ -898,7 +899,7 @@ html.guest .conclbtn{display:none}  /* conclusions are for signed-in users, not 
 .lcard{cursor:default} .lcard.hl{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
 .vword{cursor:default;border-radius:3px;padding:0 1px}
 .langpick{display:flex;flex-wrap:wrap;gap:5px} .langchip{padding:4px 9px;border:1px solid var(--line);border-radius:16px;
-  font:12px Inter;cursor:pointer;color:var(--dim)} .langchip.on{background:var(--grad);color:#fff;border-color:transparent}
+  font:12px Inter;cursor:pointer;color:var(--dim)} .langchip.on{background:var(--grad-btn);color:#fff;border-color:transparent}
 .w{cursor:pointer;border-radius:3px;padding:0 1px;transition:background .1s}
 .w:hover{background:hsl(45 85% 40% / .32);box-shadow:0 0 0 2px hsl(45 80% 38% / .5)}  /* darker, semi-transparent lift on any word */
 .w.hl-orig{background:hsl(142 62% 42% / .26)!important}     /* in the original -> soft green tint behind */
@@ -1252,7 +1253,7 @@ html.guest .conclbtn{display:none}  /* conclusions are for signed-in users, not 
 .node{margin:1px 0}
 .node>.row{display:flex;align-items:center;gap:6px;width:100%;text-align:left;background:transparent;border:none;
   color:var(--ink);padding:6px 9px;border-radius:7px;cursor:pointer;font:14px Inter}
-.node>.row:hover{background:var(--panel2)} .node>.row.on{background:var(--grad);color:#fff}
+.node>.row:hover{background:var(--panel2)} .node>.row.on{background:var(--grad-btn);color:#fff}
 .node>.row .tw{width:12px;color:var(--dim);font-size:10px;flex:none} .node>.row.on .tw{color:#fff}
 .kids{margin:2px 0 6px 12px;padding-left:8px;border-left:1px solid var(--line);display:none}
 .kids.open{display:block}
@@ -1272,7 +1273,7 @@ html.guest .conclbtn{display:none}  /* conclusions are for signed-in users, not 
 .studyhead .sub{font:12px Inter;color:var(--dim)}
 .tabs{display:flex;gap:4px;margin:0 0 10px;flex-wrap:wrap}
 .tabs button{flex:1;min-width:70px;padding:6px 4px;font:700 11px Inter;letter-spacing:.04em;background:var(--panel);color:var(--dim)}
-.tabs button.on{background:var(--grad);color:#fff;border-color:transparent}
+.tabs button.on{background:var(--grad-btn);color:#fff;border-color:transparent}
 .tabpane{display:none} .tabpane.on{display:block}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin:0 0 10px}
 .card h3{margin:0 0 8px;font:700 12px Inter;color:var(--gold);letter-spacing:.05em;text-transform:uppercase}
@@ -1393,7 +1394,7 @@ html.guest .conclbtn{display:none}  /* conclusions are for signed-in users, not 
 .settings h3{margin:0 0 12px;font:700 13px Inter;color:var(--gold)}
 .settings .row{margin:0 0 14px} .settings label{display:block;font:600 12px Inter;color:var(--dim);margin-bottom:6px}
 .settings input[type=range]{width:100%} .settings .seg{display:flex;gap:6px}
-.settings .seg button{flex:1} .settings .seg button.on{background:var(--grad);border:none;color:#fff}
+.settings .seg button{flex:1} .settings .seg button.on{background:var(--grad-btn);border:none;color:#fff}
 .toggle{display:flex;align-items:center;justify-content:space-between}
 .verorder{list-style:none;margin:0;padding:0} .verorder li{display:flex;align-items:center;gap:6px;padding:5px 7px;
   background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:5px;font:13px Inter}
