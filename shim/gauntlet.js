@@ -112,7 +112,12 @@
 
   window.YBgauntletAnswer = function (query, threshold) {
     if (!READY || !KB) return null;
-    threshold = (threshold === undefined) ? 2.0 : threshold;
+    // Confidence floor (mirrors taviel_apologetics.gauntlet_entry). The gauntlet is a vetted
+    // OBJECTION KB, not a catechism: it must only fire on a confident match, else defer to the
+    // grounded answer. Measured: real matches score >= ~4.9, but a broad definitional query like
+    // "who is God" / "what is God" scores ~2.5 on common words and used to squeak past 2.0 --
+    // serving the unrelated round 2 (why God allows suffering). A 4.0 floor lets those defer.
+    threshold = (threshold === undefined) ? 4.0 : threshold;
     var b = best(query);
     if (!b || !b.entry || b.score < threshold) return null;
     var seed = (Math.random() * 2e9) | 0;
