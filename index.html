@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><link rel="manifest" href="manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="YahBible"><meta name="description" content="Read, search and study Scripture in the original Hebrew and Greek — 120+ versions, Enoch, Nag Hammadi, the Torah, and Uriel's Heavenly Design. Works offline on any device."><meta property="og:type" content="website"><meta property="og:site_name" content="YahBible"><meta property="og:title" content="YahBible — the whole counsel of Scripture"><meta property="og:description" content="Read, search and study Scripture in the original Hebrew and Greek — 120+ versions, Enoch, Nag Hammadi, the Torah, and Uriel's Heavenly Design. Works offline on any device."><meta property="og:url" content="https://realizeus.org/yahbible"><meta property="og:image" content="https://realizeus.org/yahbible-app/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="YahBible — the whole counsel of Scripture"><meta name="twitter:description" content="120+ versions, Hebrew & Greek word study, the apocrypha, and Uriel's Heavenly Design. Works offline."><meta name="twitter:image" content="https://realizeus.org/yahbible-app/assets/og.png"><link rel="apple-touch-icon" href="assets/icon-180.png"><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='13' fill='%23141021'/><text x='32' y='45' font-size='34' text-anchor='middle' fill='%23e3c76e' font-family='Georgia,serif'>%D7%90%D7%AA</text></svg>"><link rel="icon" href="assets/icon-180.png"><script src="shim/boot.js"></script><script src="shim/netiviel_feed.js"></script><script src="shim/messages_link.js"></script><script src="shim/auth.js"></script><script src="shim/handlers_study.js"></script><script src="shim/taviel.js"></script><script src="shim/packdrawer.js"></script><script src="shim/camera.js"></script><script src="shim/worddef.js"></script><script src="shim/presentation.js"></script><script src="shim/gauntlet.js"></script>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><link rel="manifest" href="manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="YahBible"><meta name="description" content="Read, search and study Scripture in the original Hebrew and Greek — 120+ versions, Enoch, Nag Hammadi, the Torah, and Uriel's Heavenly Design. Works offline on any device."><meta property="og:type" content="website"><meta property="og:site_name" content="YahBible"><meta property="og:title" content="YahBible — the whole counsel of Scripture"><meta property="og:description" content="Read, search and study Scripture in the original Hebrew and Greek — 120+ versions, Enoch, Nag Hammadi, the Torah, and Uriel's Heavenly Design. Works offline on any device."><meta property="og:url" content="https://realizeus.org/yahbible"><meta property="og:image" content="https://realizeus.org/yahbible-app/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="YahBible — the whole counsel of Scripture"><meta name="twitter:description" content="120+ versions, Hebrew & Greek word study, the apocrypha, and Uriel's Heavenly Design. Works offline."><meta name="twitter:image" content="https://realizeus.org/yahbible-app/assets/og.png"><link rel="apple-touch-icon" href="assets/icon-180.png"><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='13' fill='%23141021'/><text x='32' y='45' font-size='34' text-anchor='middle' fill='%23e3c76e' font-family='Georgia,serif'>%D7%90%D7%AA</text></svg>"><link rel="icon" href="assets/icon-180.png"><script src="shim/boot.js"></script><script src="shim/netiviel_feed.js"></script><script src="shim/messages_link.js"></script><script src="shim/auth.js"></script><script src="shim/handlers_study.js"></script><script src="shim/taviel.js"></script><script src="shim/packdrawer.js"></script><script src="shim/camera.js"></script><script src="shim/worddef.js"></script><script src="shim/presentation.js"></script><script src="shim/gauntlet.js"></script><script src="shim/eternal_mirror.js"></script><script src="shim/feedback.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>YahBible</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1355,6 +1355,15 @@ html.guest .conclbtn{display:none}  /* conclusions are for signed-in users, not 
 .chathead .avname{color:var(--vtitle);font:700 15px IBM Plex Sans} .chathead .cback{margin-left:auto}
 .chatmsgs{flex:1;display:flex;flex-direction:column;gap:14px;padding:20px 0 26px}
 .chatmsgs .empty{color:var(--dim);font-style:italic;text-align:center;margin:24px 0}
+/* was this answer any good? -- one quiet row under each of Tav'iel's replies */
+.fbbar{display:flex;align-items:center;gap:8px;margin:8px 0 0 30px;flex-wrap:wrap}
+.fbbtn{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;
+  border:1px solid var(--line);background:transparent;color:var(--dim);cursor:pointer;
+  font:500 11.5px IBM Plex Sans,system-ui,sans-serif}
+.fbbtn:hover{border-color:var(--sky);color:var(--ink)}
+.fbbtn[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);
+  background:hsl(45 60% 50% / .10)}
+.fbnote{font:400 11.5px IBM Plex Sans,system-ui,sans-serif;color:var(--dim)}
 .msg{max-width:88%;font:16px/1.62 "EB Garamond",Georgia,serif}
 .msg.you{align-self:flex-end;background:var(--panel2);border:1px solid var(--line);
   border-radius:14px 14px 4px 14px;padding:10px 14px;color:var(--ink)}
@@ -3626,6 +3635,16 @@ async function boot(){
     jw.sort((a,b)=>{const ia=JORDER.indexOf(a.id),ib=JORDER.indexOf(b.id);return (ia<0?99:ia)-(ib<0?99:ib);});
     // --- Gnostic Scriptures ---
     const gl=document.createElement('div');gl.className='lbl';gl.textContent='Gnostic Scriptures';menu.appendChild(gl);
+    // The Eternal Mirror -- the full book, as-is, above the Gnostic Map/Lineage
+    const emNode=document.createElement('div');emNode.className='node';
+    const emrow=document.createElement('button');emrow.className='row maprow';
+    emrow.innerHTML='<span class="tw">&#10039;</span><span>The Eternal Mirror</span>';
+    emrow.onclick=async()=>{const d=await api('/api/apoc_books?id=corpus:eternal_mirror');
+      const bk=d.books&&d.books[0];if(!bk)return;   // ch 0 is the proclamation -- a FALSY chapter number, so no ||
+      const c0=(bk.chapters&&bk.chapters.length)?bk.chapters[0]:0;
+      openApocChapter('corpus:eternal_mirror',bk.book,c0);};
+    emNode.appendChild(emrow);menu.appendChild(emNode);
+    menu.appendChild(apocNode({id:'corpus:eternal_mirror',title:'The Eternal Mirror — chapters'}));
     const mapNode=document.createElement('div');mapNode.className='node';
     const mrow=document.createElement('button');mrow.className='row maprow';mrow.innerHTML='<span class="tw">&#9737;</span><span>Gnostic Map</span>';
     mrow.onclick=()=>openGnosticMap();mapNode.appendChild(mrow);menu.appendChild(mapNode);
