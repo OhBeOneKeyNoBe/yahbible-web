@@ -393,7 +393,7 @@
       "<a class='dl' href='https://qkfmjdprvtayfhigsahk.supabase.co/functions/v1/hf/mobile/YahBible-v2.apk'>Download the APK</a></div>" +
       "<div class='get'><h4>Desktop</h4><img class='qr' src='" + Q0 + "desktop.png' alt='Get YahBible for desktop'>" +
       "<p>The full-power Windows edition, with every study tool and the AI guide.</p>" +
-      "<a class='dl' href='https://github.com/OhBeOneKeyNoBe/YahBible/releases/latest' target='_blank' rel='noopener'>Download for Windows</a></div>" +
+      "<a class='dl' href='https://qkfmjdprvtayfhigsahk.supabase.co/functions/v1/hf/yb/YahBible.exe'>Download for Windows</a></div>" +
       "</div>";
     /* 5) comparison vs other Bible apps — rendered as one designed image */
     h += "<h2 class='sec' id='ybcmp'>YahBible vs. other Bible apps</h2>";
