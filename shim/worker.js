@@ -38,7 +38,7 @@ const DB_PACKS = {
   versions: "Holorites_data/daeos/taviel_versions.sqlite",
   corpus: "Holorites_data/daeos/taviel_corpus.sqlite",
   english: "Holorites_data/daeos/english_dict.sqlite",
-  lex: "Holorites_data/daeos/reflected_red_basic.sqlite",
+  lex: "Holorites_data/daeos/yahbible_lexicon.sqlite",
   enoch: "Holorites/torus_upgrades/enoch_source.sqlite",
   yt: "Holorites_data/daeos/elaniel_yt.sqlite",
   kb: "web/taviel_kb.sqlite",

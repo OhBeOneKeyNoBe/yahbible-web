@@ -41,7 +41,7 @@
     "web/apoc_pack.json": "this source",
     "web/canon_lexicon.sqlite": "the lexicon",
     "web/canon_fill.sqlite": "the full interlinear",
-    "Holorites_data/daeos/reflected_red_basic.sqlite": "the lexicon",
+    "Holorites_data/daeos/yahbible_lexicon.sqlite": "the lexicon",
   };
   let odEl = null, odTimer = 0;
   function onDemandToast(m) {

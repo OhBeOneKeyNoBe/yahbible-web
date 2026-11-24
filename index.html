@@ -3414,8 +3414,8 @@ async function openHebrewStudy(name,opts){
     strongs=[{id:opts.seedStrong.id,glyph:'',definition:opts.seedStrong.definition||opts.seedStrong.en||''}];
   // the Greek side: prefer a Greek glyph the word already carries, else resolve by name
   let greek=null;
-  try{const og=(origs||[]).find(o=>/greek|grc/i.test(o.language||'')||/^G/i.test(String(o.id||'').replace(/^makor:strong:/,'')));
-    const sg=(strongs||[]).find(s=>/^G/i.test(String(s.id||'').replace(/^makor:strong:/,'')));
+  try{const og=(origs||[]).find(o=>/greek|grc/i.test(o.language||'')||/^G/i.test(String(o.id||'').replace(/^[a-z]+:strong:/,'')));
+    const sg=(strongs||[]).find(s=>/^G/i.test(String(s.id||'').replace(/^[a-z]+:strong:/,'')));
     // a caller (a clicked original token) may seed the exact glyph so the Greek/Hebrew side is exact
     const seedGk=(opts.glyph&&(opts.lang==='el'||/greek|grc/i.test(opts.lang||'')||/[Ͱ-Ͽἀ-῿]/.test(opts.glyph)))?opts.glyph:'';
     const glyph=seedGk||(og&&og.glyph)||(sg&&sg.glyph)||'';
@@ -3449,7 +3449,7 @@ async function openHebrewStudy(name,opts){
     `<div class="letrow" data-side="heb">${_letHtml(lets,false)}</div>`+
     `<div class="letdetail">Hover a letter to reveal its name, value, and meaning.</div>`+
     `<div class="hebgemline">gematria total &mdash; <b>${d.gematria}</b></div></div>`:'';
-  const strongHtml=strongs.length?`<div class="wsfield"><b>Strong's</b><div class="wsstrongs">${strongs.map(s=>`<div class="wsst"><div class="wssthead"><span class="wsstid hebcite" data-sid="${esc(String(s.id||'').replace(/^makor:strong:/,''))}">${esc(s.id)}</span>${s.glyph?`<span class="wsstg" dir="rtl">${esc(s.glyph)}</span>`:''}</div><span class="wsstd">${hebLinkify(s.definition||'',ctxBook)}</span></div>`).join('')}</div></div>`:'';
+  const strongHtml=strongs.length?`<div class="wsfield"><b>Strong's</b><div class="wsstrongs">${strongs.map(s=>`<div class="wsst"><div class="wssthead"><span class="wsstid hebcite" data-sid="${esc(String(s.id||'').replace(/^[a-z]+:strong:/,''))}">${esc(s.id)}</span>${s.glyph?`<span class="wsstg" dir="rtl">${esc(s.glyph)}</span>`:''}</div><span class="wsstd">${hebLinkify(s.definition||'',ctxBook)}</span></div>`).join('')}</div></div>`:'';
   const gkHtml=gk?`<div class="wsfield"><b>Greek breakdown</b>`+
     `<div class="gkhead"><span class="gkwordbig holo">${esc(gk.greek)}</span>${soundBtn('gk-snd')}<span class="gksub">${esc(gk.translit||'')}</span></div>`+
     `<div class="letrow gkletrow" data-side="gk">${_letHtml(gk.letters,true)}</div>`+

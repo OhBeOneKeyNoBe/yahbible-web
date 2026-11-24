@@ -14,7 +14,7 @@
     "Holorites_data/daeos/taviel_versions.sqlite": ["All Bible Versions", "every translation for verse-by-verse comparison (large)"],
     "Holorites_data/daeos/taviel_corpus.sqlite": ["Sacred Corpus", "red-letter words + the wider corpus library"],
     "Holorites_data/daeos/english_dict.sqlite": ["English Dictionary", "offline definitions for any English word"],
-    "Holorites_data/daeos/reflected_red_basic.sqlite": ["Lexicon + Interlinear", "Hebrew/Greek originals, Strong's, interlinear"],
+    "Holorites_data/daeos/yahbible_lexicon.sqlite": ["Lexicon + Interlinear", "Hebrew/Greek originals, Strong's, interlinear"],
     "Holorites/torus_upgrades/enoch_source.sqlite": ["Enoch Sources", "1/2/3 Enoch source texts"],
     "Holorites_data/daeos/elaniel_yt.sqlite": ["Nine Keys", "chapter revelation insights"],
     "web/taviel_kb.sqlite": ["Tav'iel Knowledge", "the grounded answers Tav'iel speaks from"],
@@ -25,7 +25,7 @@
      KJV, lexicon+interlinear, English dictionary, Tav'iel KB, nine keys, enoch.
      The heavy opt-ins (all-versions 233MB, corpus, apocrypha) stay manual. */
   const AUTO = ["watchman/watchman.db",
-                "Holorites_data/daeos/reflected_red_basic.sqlite",
+                "Holorites_data/daeos/yahbible_lexicon.sqlite",
                 "Holorites_data/daeos/english_dict.sqlite",
                 "web/taviel_kb.sqlite",
                 "Holorites_data/daeos/elaniel_yt.sqlite",

@@ -1,6 +1,6 @@
 /* YahBible Web — word study / Strong's / interlinear / deep-study handlers.
    A faithful JS port of the desktop server's lexicon layer, running against the
-   reflected_red_basic + english_dict + elaniel_yt packs in OPFS, with the
+   yahbible_lexicon + english_dict + elaniel_yt packs in OPFS, with the
    openscriptures Strong's json + precomputed name-study maps as the always-on
    fallback (same degradation order as the desktop). */
 "use strict";
@@ -264,8 +264,10 @@
       senses = senses.concat(await fallbackSenses(w));
     return { found: true, word: w, address24: addr, originals, strongs: ded, senses };
   }
+  /* lexicon id prefixes: a Hebrew/Greek word token, and a Strong's entry */
+  const TOK = "tok:", SN = "lex:strong:";
   async function strongsDetail(sid) {
-    const src = sid.startsWith("makor:") ? sid : "makor:strong:" + sid;
+    const src = sid.startsWith(SN) ? sid : SN + sid;
     const row = await Q("lex",
       "SELECT source_id,language,source_record FROM lexical_nodes WHERE source_id=?", [src]);
     if (!row.length) {
@@ -390,8 +392,8 @@
       verseWords = new Set(verseSeq.map((w) => w.toLowerCase()));
     }
     const abbr = T.abbr_map[book] || book.slice(0, 3);
-    const lo = "step:" + abbr + "." + ch + "." + verse + "#";
-    const hi = "step:" + abbr + "." + ch + "." + verse + "$";
+    const lo = TOK + abbr + "." + ch + "." + verse + "#";
+    const hi = TOK + abbr + "." + ch + "." + verse + "$";
     const rows = await Q("lex",
       "SELECT address24,source_id,canonical_lemma,language FROM lexical_nodes" +
       " WHERE source_id>=? AND source_id<? ORDER BY source_id LIMIT 60", [lo, hi]);
@@ -466,7 +468,7 @@
 
   /* Resolve the token a step-sid points at, using the interlinear (which the
      canon-fill pack completes for every verse). The sid looks like
-     "step:1Pe.5.5#20=NKO" — book.chapter.verse, then #<token-index>. */
+     "tok:1Pe.5.5#20=NKO" — book.chapter.verse, then #<token-index>. */
   async function tokenForSid(sid) {
     const ref = await parseStepRef(sid);
     if (!ref) return null;
@@ -529,8 +531,8 @@
     return inv;
   }
   async function parseStepRef(sid) {
-    if (!sid || !sid.startsWith("step:")) return null;
-    const core = sid.slice(5).split("#")[0];
+    if (!sid || !sid.startsWith(TOK)) return null;
+    const core = sid.slice(TOK.length).split("#")[0];
     const parts = core.split(".");
     if (parts.length < 3) return null;
     const book = (await code2book())[parts[0]] || parts[0];
@@ -595,7 +597,7 @@
       return { uses: d.uses || [] };
     }
     if (!strong) return { uses: [] };
-    const sidkey = strong.startsWith("makor:strong:") ? strong : "makor:strong:" + strong.replace(/^:+/, "");
+    const sidkey = strong.startsWith(SN) ? strong : SN + strong.replace(/^:+/, "");
     const row = await Q("lex", "SELECT address24 FROM lexical_nodes WHERE source_id=?", [sidkey]);
     if (!row.length) return { uses: [] };
     return { uses: await usesForStrongAddr(row[0][0]) };
