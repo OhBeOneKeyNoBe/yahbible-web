@@ -423,7 +423,7 @@
      When a chapter is read, the next few are prefetched in the background so
      paging through a book is instant and nobody ever downloads the whole 1GB. */
   const STORE_BASE = (typeof window !== "undefined" && window.YB_STORE_BASE) ||
-    "https://huggingface.co/OhBeOneKeyNoBe/YahBible-Mobile/resolve/main/scripture/";
+    "https://qkfmjdprvtayfhigsahk.supabase.co/functions/v1/hf/mobile/scripture/";
   let STORE_MODE = false;
   let _cat = null, _catP = null;
   const _slug = (s) => String(s == null ? "" : s).toLowerCase()

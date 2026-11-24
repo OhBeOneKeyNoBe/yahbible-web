@@ -15,8 +15,11 @@ globalThis.sqlite3InitModuleState = {
 };
 importScripts("../vendor/sqlite-wasm/sqlite3.js");
 
-const HF = "https://huggingface.co/OhBeOneKeyNoBe/YahBible-Mobile/resolve/main/packs/desktop/";
-const HFWEB = "https://huggingface.co/OhBeOneKeyNoBe/YahBible-Mobile/resolve/main/packs/web/";
+/* The packs live in a PRIVATE Hugging Face repo; the hf edge function holds the read
+   key and hands back signed download links, so no key ever reaches the browser. */
+const HF_PROXY = "https://qkfmjdprvtayfhigsahk.supabase.co/functions/v1/hf/mobile/";
+const HF = HF_PROXY + "packs/desktop/";
+const HFWEB = HF_PROXY + "packs/web/";
 /* pack host is overridable (tests / a same-origin mirror) via ?packbase=/?packbaseweb= */
 const _P = new URLSearchParams(self.location.search);
 const PACK_BASE = _P.get("packbase") || "";

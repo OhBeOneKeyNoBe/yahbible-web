@@ -390,7 +390,7 @@
       "<a class='dl' href='https://realizeus.org/yahbible'>Open the web app</a></div>" +
       "<div class='get'><h4>Android</h4><img class='qr' src='" + Q0 + "android.png' alt='Get YahBible on Android'>" +
       "<p>Add the web app to your home screen from Chrome's menu, or install the APK.</p>" +
-      "<a class='dl' href='https://huggingface.co/OhBeOneKeyNoBe/YahBible-Mobile/resolve/main/YahBible-v2.apk'>Download the APK</a></div>" +
+      "<a class='dl' href='https://qkfmjdprvtayfhigsahk.supabase.co/functions/v1/hf/mobile/YahBible-v2.apk'>Download the APK</a></div>" +
       "<div class='get'><h4>Desktop</h4><img class='qr' src='" + Q0 + "desktop.png' alt='Get YahBible for desktop'>" +
       "<p>The full-power Windows edition, with every study tool and the AI guide.</p>" +
       "<a class='dl' href='https://github.com/OhBeOneKeyNoBe/YahBible/releases/latest' target='_blank' rel='noopener'>Download for Windows</a></div>" +

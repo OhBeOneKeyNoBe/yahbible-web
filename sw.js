@@ -7,7 +7,7 @@
      CACHE-FIRST with a background refresh: fast and offline-capable.
    Data packs live in OPFS (the worker's business) and /api never hits network. */
 "use strict";
-const SHELL = "yahbible-shell-v92";
+const SHELL = "yahbible-shell-v92-hf";
 const ASSETS = [
   "vendor/sqlite-wasm/sqlite3.js", "vendor/sqlite-wasm/sqlite3.wasm",
   "assets/elan-fish.webp", "assets/scrollfish.png",
@@ -31,10 +31,11 @@ function isAsset(p) {
 
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
-  // The iPhone edition reads Scripture from the HF per-book store (cross-origin).
-  // Cache those small per-book JSONs so a book you've opened keeps working OFFLINE
-  // (cache-first + background refresh). Other cross-origin requests pass through.
-  if (url.hostname === "huggingface.co" && url.pathname.includes("/scripture/")) {
+  // The iPhone edition reads Scripture from the per-book store in the private HF repo,
+  // through the hf edge function (cross-origin). Cache those small per-book JSONs so a
+  // book you've opened keeps working OFFLINE (cache-first + background refresh).
+  // Other cross-origin requests pass through.
+  if (url.pathname.startsWith("/functions/v1/hf/") && url.pathname.includes("/scripture/")) {
     e.respondWith((async () => {
       const hit = await caches.match(e.request);
       if (hit) {
